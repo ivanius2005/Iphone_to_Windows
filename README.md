@@ -10,46 +10,45 @@
               M I R R O R
 ```
 
-**Duplicar la pantalla del iPhone en Windows 11, sin software comercial, sin jailbreak y sin apps en el móvil.**
+**Mirror your iPhone screen to Windows 11 — no commercial software, no jailbreak, no apps on the phone.**
 
-Receptor AirPlay basado en [UxPlay](https://github.com/FDH2/UxPlay), compilado desde el código fuente con MSYS2, más un lanzador nativo en C para arrancarlo con doble clic.
-
----
-
-## ¿Qué hace?
-
-- El PC se anuncia en la red local como receptor AirPlay (`Iphone_to_Windows`)
-- Desde el iPhone: **Centro de Control → Duplicar pantalla → Iphone_to_Windows**
-- La pantalla del iPhone aparece en una ventana del PC, con audio incluido
-- Todo en red local. Nada sale de tu casa.
-
-## Requisitos
-
-- Windows 11 (probado en 11 26H2)
-- iPhone con iOS 12+ en la **misma red WiFi** que el PC
-- ~3 GB de disco para MSYS2 y dependencias
-
-> ⚠️ **Smart App Control**: si está activado, Windows bloqueará las DLLs
-> de GStreamer. Desactívalo en *Windows Security → Control de aplicaciones
-> y explorador → Smart App Control*.
+AirPlay receiver based on [UxPlay](https://github.com/FDH2/UxPlay), compiled from source with MSYS2, plus a native C launcher so you can start it with a double click.
 
 ---
 
-## Instalación
+## What it does
 
-### 1 · Instalar MSYS2
+- The PC announces itself on the local network as an AirPlay receiver (`Iphone_to_Windows`)
+- From the iPhone: **Control Center → Screen Mirroring → Iphone_to_Windows**
+- The iPhone screen appears in a window on the PC, audio included
+- Fully local. Nothing leaves your network.
 
-Descarga el instalador desde [msys2.org](https://www.msys2.org/) e instálalo en la ruta por defecto (`C:\msys64`).
+## Requirements
 
-Abre la terminal **MSYS2 MINGW64** (importante: la MINGW64, no la UCRT ni la MSYS) y actualiza el sistema:
+- Windows 11 (tested on 11 26H2)
+- iPhone with iOS 12+ on the **same WiFi network** as the PC
+- ~3 GB of disk space for MSYS2 and dependencies
+
+> ⚠️ **Smart App Control**: if enabled, Windows will block GStreamer's DLLs.
+> Disable it at *Windows Security → App & browser control → Smart App Control*.
+
+---
+
+## Installation
+
+### 1 · Install MSYS2
+
+Download the installer from [msys2.org](https://www.msys2.org/) and install it at the default path (`C:\msys64`).
+
+Open the **MSYS2 MINGW64** terminal (important: MINGW64, not UCRT or MSYS) and update the system:
 
 ```bash
 pacman -Syu
 ```
 
-Si la terminal se cierra sola, ábrela de nuevo y repite el comando hasta que diga que todo está al día.
+If the terminal closes on its own, reopen it and run the command again until it says everything is up to date.
 
-### 2 · Instalar dependencias
+### 2 · Install dependencies
 
 ```bash
 pacman -S --needed mingw-w64-x86_64-gcc mingw-w64-x86_64-cmake make \
@@ -59,7 +58,7 @@ pacman -S --needed mingw-w64-x86_64-gcc mingw-w64-x86_64-cmake make \
   mingw-w64-x86_64-libplist git
 ```
 
-### 3 · Compilar UxPlay
+### 3 · Build UxPlay
 
 ```bash
 cd ~
@@ -70,99 +69,99 @@ cmake ..
 cmake --build .
 ```
 
-Si todo va bien, la última línea será:
+If everything goes well, the last line will be:
 
 ```
 [40/40] Linking CXX executable uxplay.exe
 ```
 
-### 4 · Probar
+### 4 · Test it
 
 ```bash
 ./uxplay -n "Iphone_to_Windows"
 ```
 
-En el iPhone: **Centro de Control → Duplicar pantalla → Iphone_to_Windows**.
+On the iPhone: **Control Center → Screen Mirroring → Iphone_to_Windows**.
 
-> 💡 Windows Firewall pedirá permiso la primera vez — acéptalo.
-> Si no aparece el diálogo, crea las reglas manualmente (cmd como administrador):
+> 💡 Windows Firewall will ask for permission the first time — accept it.
+> If the dialog doesn't appear, create the rules manually (cmd as administrator):
 > ```
 > netsh advfirewall firewall add rule name="mDNS" dir=in action=allow protocol=UDP localport=5353
 > netsh advfirewall firewall add rule name="AirPlay" dir=in action=allow protocol=TCP localport=7000
 > ```
 
-### 5 · Compilar el lanzador (doble clic)
+### 5 · Build the launcher (double-click to start)
 
-El lanzador (`launcher/ivn_mirror_launcher.c`) configura el PATH de las DLLs
-de MinGW64 y arranca UxPlay, para no tener que abrir MSYS2 cada vez.
+The launcher (`launcher/ivn_mirror_launcher.c`) sets up the MinGW64 DLL path
+and starts UxPlay, so you don't have to open the MSYS2 terminal every time.
 
-Antes de compilar, abre el archivo y edita las dos cosas marcadas:
+Before building, open the file and edit the two marked values:
 
 ```c
-// 1. Sustituye TU_USUARIO por tu nombre de usuario de Windows
+// 1. Replace YOUR_USERNAME with your Windows username
 const char *cmd =
-    "C:\\msys64\\home\\TU_USUARIO\\UxPlay\\build\\uxplay.exe "
-    "-n \"Iphone_to_Windows\"";   // 2. Cambia el nombre si quieres
+    "C:\\msys64\\home\\YOUR_USERNAME\\UxPlay\\build\\uxplay.exe "
+    "-n \"Iphone_to_Windows\"";   // 2. Change the name if you want
 ```
 
-Luego compila desde la terminal MSYS2 MINGW64:
+Then compile from the MSYS2 MINGW64 terminal:
 
 ```bash
-gcc ~/ivn_mirror_launcher.c -o "/c/Users/TU_USUARIO/Desktop/IVN_Mirror.exe"
+gcc ~/ivn_mirror_launcher.c -o "/c/Users/YOUR_USERNAME/Desktop/IVN_Mirror.exe"
 ```
 
-Doble clic en `IVN_Mirror.exe` → receptor en marcha. Cerrar la ventana lo detiene.
+Double-click `IVN_Mirror.exe` → receiver starts. Close the window to stop it.
 
 ---
 
-## Personalizar el nombre del receptor
+## Customizing the receiver name
 
-El nombre que aparece en el iPhone al pulsar "Duplicar pantalla" se puede cambiar
-en cualquier momento. Hay dos sitios donde modificarlo:
+The name that appears on the iPhone when tapping "Screen Mirroring" can be
+changed at any time. There are two places to do it:
 
-**Uso directo (sin lanzador):**
+**Direct use (without launcher):**
 ```bash
-./uxplay -n "El nombre que quieras"
+./uxplay -n "Whatever name you want"
 ```
 
-**En el lanzador** (`launcher/ivn_mirror_launcher.c`), busca esta línea y edita el nombre:
+**In the launcher** (`launcher/ivn_mirror_launcher.c`), find this line and edit the name:
 ```c
 "-n \"Iphone_to_Windows\"";
 ```
 
-Cambia `Iphone_to_Windows` por cualquier nombre, recompila y listo.
+Replace `Iphone_to_Windows` with any name, recompile, and you're done.
 
 ---
 
-## Problemas conocidos
+## Known issues
 
-| Síntoma | Causa | Solución |
+| Symptom | Cause | Fix |
 |---|---|---|
-| El iPhone no ve el receptor | Firewall bloqueando mDNS | Reglas del paso 4 |
-| `DLL load failed` / apps bloqueadas | Smart App Control | Desactivarlo (ver Requisitos) |
-| El iPhone lo ve solo como altavoz | Receptor solo-audio (p. ej. airplay2-receiver) | Usar UxPlay, que sí implementa mirroring |
-| Ventana negra / sin vídeo | Plugins GStreamer incompletos | Reinstalar los paquetes `gst-plugins-*` del paso 2 |
+| iPhone doesn't see the receiver | Firewall blocking mDNS | Add rules from step 4 |
+| `DLL load failed` / apps blocked | Smart App Control enabled | Disable it (see Requirements) |
+| iPhone sees it as a speaker only | Audio-only receiver (e.g. airplay2-receiver) | Use UxPlay, which implements full mirroring |
+| Black window / no video | Incomplete GStreamer plugins | Reinstall `gst-plugins-*` packages from step 2 |
 
 ---
 
 ## Roadmap
 
-- [x] **Fase 1** — Mirror en red local (este repositorio)
-- [ ] **Fase 2** — Acceso remoto vía servidor propio (stream HLS/WebRTC desde
-      el receptor hacia un navegador, accesible desde fuera de casa)
-- [ ] **Inversa** — Ver la pantalla del PC desde el iPhone (captura de
-      escritorio → stream web, sin apps en el móvil)
+- [x] **Phase 1** — Local network mirror (this repository)
+- [ ] **Phase 2** — Remote access via self-hosted server (HLS/WebRTC stream from
+      the receiver to a browser, accessible from anywhere)
+- [ ] **Reverse** — View the PC screen from the iPhone (desktop capture →
+      web stream, no apps on the phone)
 
 ---
 
-## Créditos y licencias
+## Credits & licenses
 
-- [**UxPlay**](https://github.com/FDH2/UxPlay) — el receptor AirPlay real,
-  de F. Duncanh y colaboradores, licencia **GPL-3.0**. Este repositorio
-  **no** redistribuye su código ni sus binarios; solo documenta cómo compilarlo.
-- [**GStreamer**](https://gstreamer.freedesktop.org/) — framework multimedia (LGPL).
-- El lanzador (`launcher/`) es obra propia, licencia **MIT** (ver `LICENSE`).
+- [**UxPlay**](https://github.com/FDH2/UxPlay) — the actual AirPlay receiver,
+  by F. Duncanh and contributors, licensed **GPL-3.0**. This repository
+  does **not** redistribute its code or binaries; it only documents how to build it.
+- [**GStreamer**](https://gstreamer.freedesktop.org/) — multimedia framework (LGPL).
+- The launcher (`launcher/`) is original work, licensed **MIT** (see `LICENSE`).
 
 ---
 
-<sub>Parte del ecosistema **IVN_05** · `#0A0A0A` · `#00FF47` · BMW M</sub>
+<sub>Part of the **IVN_05** ecosystem · `#0A0A0A` · `#00FF47` · BMW M</sub>
