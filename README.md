@@ -144,16 +144,6 @@ Replace `Iphone_to_Windows` with any name, recompile, and you're done.
 
 ---
 
-## Roadmap
-
-- [x] **Phase 1** — Local network mirror (this repository)
-- [ ] **Phase 2** — Remote access via self-hosted server (HLS/WebRTC stream from
-      the receiver to a browser, accessible from anywhere)
-- [ ] **Reverse** — View the PC screen from the iPhone (desktop capture →
-      web stream, no apps on the phone)
-
----
-
 ## Credits & licenses
 
 - [**UxPlay**](https://github.com/FDH2/UxPlay) — the actual AirPlay receiver,
